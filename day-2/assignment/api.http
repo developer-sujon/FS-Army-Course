@@ -1,0 +1,67 @@
+GET http://localhost:6100
+
+
+###
+GET http://localhost:6100/ticket
+
+###
+POST http://localhost:6100/ticket
+Content-Type: application/json
+
+{
+    "userName":"developer-akbor",
+    "price":100
+}
+
+###
+
+GET http://localhost:6100/ticket/iNm9QyirH
+
+###
+
+PATCH http://localhost:6100/ticket/iNm9QyirH
+Content-Type: application/json
+
+{
+   "userName":"developer-sujon",
+   "price":200 
+}
+
+###
+
+DELETE http://localhost:6100/ticket/iNm9QyirH
+
+###
+
+POST http://localhost:6100/ticket/bulk
+Content-Type: application/json
+
+{
+   "userName":"developer-sujon",
+   "price":50,
+   "quantity":10
+}
+
+###
+
+PATCH http://localhost:6100/ticket/bulk
+Content-Type: application/json
+
+{
+   "userName":"developer-sujon",
+   "price":10,
+   "quantity":10
+}
+
+###
+
+DELETE http://localhost:6100/ticket/bulk
+Content-Type: application/json
+
+{
+   "userName": "developer-sujon"
+}
+
+###
+
+GET http://localhost:6100/ticket/draw/3
