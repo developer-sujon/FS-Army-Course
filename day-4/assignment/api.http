@@ -1,0 +1,33 @@
+GET http://localhost:6300
+
+
+###
+GET http://localhost:6300/book
+
+###
+POST http://localhost:6300/book
+Content-Type: application/json
+
+{
+    "author":"developer-akbor",
+    "title":"",
+    "price":100
+}
+
+###
+
+GET http://localhost:6300/book/eXNezTLUO
+
+###
+
+PATCH http://localhost:6300/book/eXNezTLUO
+Content-Type: application/json
+
+{
+   "author":"developer-sujon",
+   "price":200 
+}
+
+###
+
+DELETE http://localhost:6300/book/eXNezTLUO
