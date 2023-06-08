@@ -1,0 +1,471 @@
+{
+	"info": {
+		"_postman_id": "db675df9-b564-4e9a-b3bb-0375d0ef3da1",
+		"name": "fs-manage",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19667438",
+		"_collection_link": "https://speeding-moon-9762-1.postman.co/workspace/Shunno-IT~19b716b7-94a1-4697-a679-5a0f32e2504e/collection/19667438-db675df9-b564-4e9a-b3bb-0375d0ef3da1?action=share&creator=19667438&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"devoloper.sujon@gmail.com\",\r\n    \"password\": \"pass1234@\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseURL}}/auth/login",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Mohammad Sujon\",\r\n    \"email\": \"devoloper.sujon@gmail.com\",\r\n    \"password\": \"pass1234@\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseURL}}/auth/register",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "key",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"hisabnikash token\"\r\n} ",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseURL}}/keys",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"keys"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "kyes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseURL}}/keys",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"keys"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"title\": \"netfee 3 token\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseURL}}/keys/644d2ac74177eb5474ff0378",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"keys",
+								"644d2ac74177eb5474ff0378"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BaseURL}}/keys/644d2ac74177eb5474ff0378",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"keys",
+								"644d2ac74177eb5474ff0378"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "multipledelete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ids\": [\"644d389da308d22a943355a2\", \"644d383cb45113190c817201\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseURL}}/keys/multiple-delete",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"keys",
+								"multiple-delete"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "vault",
+			"item": [
+				{
+					"name": "upload",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"description": "the file that you want to upload",
+									"type": "file",
+									"src": "/C:/Users/devel/Desktop/developer-sujon.png"
+								},
+								{
+									"key": "description",
+									"value": "description of the file",
+									"description": "description of the file (optional)",
+									"type": "text"
+								},
+								{
+									"key": "tags",
+									"value": "tag1,tag2,tag3",
+									"description": "comma separated tags (optional)",
+									"type": "text"
+								},
+								{
+									"key": "region",
+									"value": "bangladesh",
+									"description": "region of the file (optional)",
+									"type": "text"
+								},
+								{
+									"key": "clientApp",
+									"value": "HISABNIKASH",
+									"description": "enum ['NETFEE', 'HISABNIKASH', 'BAYANNOPAY'] (optional)",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BaseURL}}/vault/upload",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"vault",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delte",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "publicID",
+									"value": "lilsf3l19bdf8e10-1065-436a-bd25-c94de3c38233",
+									"description": "shielded id of the file, generated during upload (required)",
+									"type": "text"
+								},
+								{
+									"key": "permanent",
+									"value": "false",
+									"description": "false moves to trash, true deletes the file directly. defaults to false",
+									"type": "text"
+								},
+								{
+									"key": "clientApp",
+									"value": "HISABNIKASH",
+									"description": "enum ['NETFEE', 'HISABNIKASH', 'BAYANNOPAY']  defaults to SHUNNOIT",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BaseURL}}/vault",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"vault"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "search",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "minSize",
+									"value": "1",
+									"description": "minimum size of the file in bytes (optional)",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "maxDate",
+									"value": "2030-11-04T11:35:38.085Z",
+									"description": "max iso upload date (optional)",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "type",
+									"value": "video",
+									"description": "content type (optional and partial)",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "sortField",
+									"value": "timestamp",
+									"description": "field used for sorting (one of _id,  type, size, timestamp, name, description)",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "sortOrder",
+									"value": "1",
+									"description": "order of the sorting, ascending or descending (1 or -1)",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "garbage",
+									"value": "true",
+									"description": "true will show you content in the trash can, false will show you standard content (defaults to false)",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "visibility",
+									"value": "true",
+									"description": "true will show you content in visibility can, false will show you standard content (defaults to false)",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "path",
+									"value": "storage/2023/May/4/files/videos/1-1683201218505.mp4",
+									"description": "content patch (optional and partial)",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BaseURL}}/vault/search",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"vault",
+								"search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sign",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "maxAge",
+									"value": "3600",
+									"description": "default: 3600, 1 hour before expiry",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BaseURL}}/vault/sign",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"vault",
+								"sign"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "restore",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "publicID",
+									"value": "lh949pal",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BaseURL}}/vault/restore",
+							"host": [
+								"{{BaseURL}}"
+							],
+							"path": [
+								"vault",
+								"restore"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJsaWx0OGIxOCIsImlhdCI6MTY4NjE0ODQxNCwiZXhwIjo5MDA3MTk5MjU0NzQwOTkxLCJ0eXBlIjoiQVBJX0tFWSJ9.cOZXcLSg4hHPspI5nf5QYFEtlAAnQrfkvoFTSTVX5fo",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BaseURL",
+			"value": "http://localhost:4500/api/v1",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "BaseURL",
+			"value": "http://139.84.135.222:4500/api/v1",
+			"type": "string"
+		}
+	]
+}
