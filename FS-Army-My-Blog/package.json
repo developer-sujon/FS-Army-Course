@@ -1,0 +1,25 @@
+{
+  "name": "fs-army-my-blog",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Muhammad Sujon",
+  "license": "MIT",
+  "scripts": {
+    "start": "node ./src/index.js",
+    "start:dev": "nodemon ./src/index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-openapi-validator": "^5.0.4",
+    "mongoose": "^7.4.2",
+    "morgan": "^1.10.0",
+    "swagger-ui-express": "^5.0.0",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^8.0.2",
+    "faker": "^6.6.6"
+  }
+}
