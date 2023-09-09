@@ -1,0 +1,22 @@
+{
+  "name": "chiri-freelancer-management-system",
+  "version": "1.0.0",
+  "description": "The purpose of the Chiri Freelancer Management System is to empower freelancers with efficient tools and resources, streamline freelance operations, foster collaboration, and provide personalized financial insights. This project aims to simplify freelancers' lives and enhance their success in the freelance economy.",
+  "main": "index.js",
+  "repository": "https://github.com/developer-sujon/chiri",
+  "author": "developer-sujon <devoloper.sujon@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "pm2 start ecosystem.config.json --no-daemon",
+    "start:dev": "cross-env NODE_ENV=development nodemon src/index.js"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^8.0.2",
+    "add": "^2.0.6",
+    "cross-env": "^7.0.3"
+  },
+  "dependencies": {
+    "mongoose": "^7.5.0"
+  }
+}
