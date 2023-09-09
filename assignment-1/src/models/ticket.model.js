@@ -2,7 +2,9 @@
 const { model, Schema } = require("mongoose");
 
 //Internal Lib Import
-const { ticketEnum, ticketTypes } = require("../constant/enum/ticket.enum");
+const {
+  ticket: { ticketEnum, ticketTypes },
+} = require("../constant/enums");
 
 const ticketSchema = new Schema(
   {
@@ -43,8 +45,8 @@ const ticketSchema = new Schema(
     type: {
       type: String,
       enum: ticketEnum,
-      require: true,
-      default: ticketTypes,
+      required: true,
+      default: ticketTypes.WEB_DESIGN,
     },
   },
   { timestamps: true, versionKey: false }

@@ -6,4 +6,7 @@ const categoriesType = {
 
 const categoryEnum = Object.keys(categoriesType);
 
-export { categoriesType, categoryEnum };
+module.exports = {
+  categoriesType,
+  categoryEnum,
+};

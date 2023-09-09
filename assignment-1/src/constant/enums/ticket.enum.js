@@ -7,4 +7,7 @@ const ticketTypes = {
 
 const ticketEnum = Object.keys(ticketTypes);
 
-export { ticketEnum, ticketTypes };
+module.exports = {
+  ticketEnum,
+  ticketTypes,
+};

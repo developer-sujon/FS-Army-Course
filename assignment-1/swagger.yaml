@@ -36,7 +36,24 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#components/schemas/SignupDto"
+              type: object
+              required:
+                - name
+                - email
+                - password
+              properties:
+                name:
+                  type: string
+                  example: Mohamamd Sujon
+                email:
+                  type: string
+                  format: email
+                  example: admin@devsuon.com
+                password:
+                  type: string
+                  format: password
+                  example: pass1234@
+                # $ref: "#components/schemas/SignupDto"
       responses:
         "201":
           description: Signup Successful
@@ -94,7 +111,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#components/schemas/SigninDto"
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: admin@devsuon.com
+                password:
+                  type: string
+                  format: password
+                  example: pass1234@
+              required: [email, password]
       responses:
         "201":
           description: Signin Successful
@@ -1194,6 +1221,9 @@ components:
               error:
                 type: string
                 example: Bad Request
+              message:
+                type: string
+                example: Invalid Parameters
               data:
                 type: array
                 items:
@@ -1225,7 +1255,7 @@ components:
                 example: Unauthorized
               message:
                 type: string
-                example: You don't have the right permissions
+                example: "Sorry, you are not authorized to access this resource."
     "403":
       description: Forbidden
       content:
@@ -1432,6 +1462,8 @@ components:
           type: boolean
         type:
           type: string
+          enum: [TICKET, BID, INVOICE]
+          default: "BID"
         timestamp:
           $ref: "#/components/schemas/Timestamp"
     Invoice:
@@ -1491,10 +1523,10 @@ components:
         status:
           type: string
           enum:
-            - new
-            - complete
+            - NEW
+            - COMPLETE
           description: Status of the invoice (new or complete).
-          example: "new"
+          example: "NEW"
         timestamp:
           $ref: "#/components/schemas/Timestamp"
       required:
@@ -1545,16 +1577,13 @@ components:
         bidStatus:
           type: string
           description: Status of the bid.
-          example: "pending"
+          enum: [ACCEPTED, REJECTED, SELECTED, WAITING]
+          example: "WAITING"
         paymentType:
           type: string
-          enum:
-            - card
-            - cash
-            - cheque
-            - escrow
+          enum: [CARD, CASH, CHEQUE, ESCROW]
           description: Payment type for the bid.
-          example: "card"
+          example: "CARD"
         price:
           type: integer
           format: int32
@@ -1614,7 +1643,7 @@ components:
           format: date-time
         type:
           type: string
-          enum: [webDesign, logoDesign, branding, softwareConsulting]
-          default: webDesign
+          enum: [WEB_DESIGN, LOGO_DESIGN, BRANDING, SOFTWARE_CONSULTING]
+          default: WEB_DESIGN
         timestamp:
           $ref: "#/components/schemas/Timestamp"

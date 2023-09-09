@@ -1,30 +1,33 @@
 //External Lib Import
 const { model, Schema } = require("mongoose");
+
+//Internal Lib Import
 const {
-  categoryEnum,
-  categoriesType,
-} = require("../constant/enum/category.enum");
+  category: { categoryEnum, categoriesType },
+} = require("../constant/enums");
 
 const categorySchema = new Schema(
   {
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      require: true,
+      required: true,
     },
     name: {
       type: String,
-      require: true,
+      minLength: 3,
+      maxLength: 30,
+      required: true,
     },
     isActive: {
       type: Boolean,
-      require: true,
+      required: true,
       default: true,
     },
     type: {
       type: String,
       enum: categoryEnum,
-      require: true,
+      required: true,
       default: categoriesType.BID,
     },
   },
@@ -32,4 +35,5 @@ const categorySchema = new Schema(
 );
 
 const Category = model("Category", categorySchema);
-export default Category;
+
+module.exports = Category;
