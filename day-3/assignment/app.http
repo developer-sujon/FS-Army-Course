@@ -1,9 +1,0 @@
-GET http://localhost:6100/generateRandomNumber?start=5&end=15
-
-###
-
-POST  http://localhost:6100/generatePerson?firstName=true&lastName=true&email=true&avatar=true&age=true
-
-###
-
-GET http://localhost:6100/stringInfo?string=ab@%^)(+_12c
