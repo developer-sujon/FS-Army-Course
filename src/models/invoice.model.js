@@ -8,6 +8,11 @@ const {
 
 const invoiceSchema = new Schema(
   {
+    adminId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -19,29 +24,34 @@ const invoiceSchema = new Schema(
       required: true,
     },
     invoiceNumber: {
-      type: Number,
+      type: String,
       required: true,
     },
     dateOfCreation: {
       type: Date,
       required: true,
+      default: Date.now,
     },
     dateSent: {
       type: Date,
+      required: true,
+      default: Date.now,
     },
     dateDue: {
       type: Date,
+      required: true,
+      default: Date.now,
     },
     tax: {
       type: Number,
       required: true,
+      default: 0,
     },
     discount: {
       type: Number,
     },
     amountDue: {
       type: Number,
-      required: true,
     },
     brief: {
       type: String,

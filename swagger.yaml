@@ -173,6 +173,8 @@ paths:
       description: Retrieve a list of users.
       tags:
         - Users
+      security:
+        - bearerAuth: []
       parameters:
         - $ref: "#/components/parameters/pageParam"
         - $ref: "#/components/parameters/limitParam"
@@ -230,12 +232,114 @@ paths:
       description: Create a new user.
       tags:
         - Users
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/User"
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 3
+                  maxLength: 30
+                  description: The name of the user.
+                email:
+                  type: string
+                  format: email
+                  description: The email address of the user (should be unique).
+                password:
+                  type: string
+                  minLength: 8
+                  description: The user's password.
+                dateOfBirth:
+                  type: string
+                  format: date
+                  description: The date of birth of the user.
+                gender:
+                  type: string
+                  minLength: 3
+                  maxLength: 30
+                  description: The gender of the user.
+                brief:
+                  type: string
+                  minLength: 3
+                  maxLength: 100
+                  description: A brief description of the user.
+                profileImage:
+                  type: string
+                  minLength: 3
+                  maxLength: 30
+                  description: The user's profile image URL.
+                phone:
+                  type: string
+                  minLength: 3
+                  maxLength: 30
+                  description: The user's phone number.
+                fax:
+                  type: string
+                  minLength: 3
+                  maxLength: 30
+                  description: The user's fax number.
+                address:
+                  type: string
+                  minLength: 3
+                  maxLength: 30
+                  description: The user's address.
+                city:
+                  type: string
+                  minLength: 3
+                  maxLength: 30
+                  description: The city where the user resides.
+                state:
+                  type: string
+                  minLength: 3
+                  maxLength: 30
+                  description: The state where the user resides.
+                zip:
+                  type: string
+                  minLength: 3
+                  maxLength: 30
+                  description: The postal code of the user's location.
+                socialMedia:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      label:
+                        type: string
+                        minLength: 3
+                        maxLength: 30
+                        description: The label for the social media link.
+                      icon:
+                        type: string
+                        minLength: 3
+                        maxLength: 30
+                        description: The icon associated with the social media link.
+                      link:
+                        type: string
+                        minLength: 3
+                        maxLength: 30
+                        description: The URL of the social media link.
+                  description: An array of social media links.
+                role:
+                  type: string
+                  enum: [FREELANCER, OTHER_ROLE] # Define the available roles here
+                  default: FREELANCER
+                  description: The role of the user.
+                status:
+                  type: string
+                  enum: [PENDING, ACTIVE, INACTIVE] # Define the available statuses here
+                  default: PENDING
+                  description: The status of the user.
+              required:
+                - name
+                - email
+                - password
+                - role
+                - status
       responses:
         "201":
           description: User created successfully.
@@ -286,6 +390,8 @@ paths:
       description: Retrieve a user by ID.
       tags:
         - Users
+      security:
+        - bearerAuth: []
       parameters:
         - $ref: "#/components/parameters/idPathParam"
       responses:
@@ -308,6 +414,8 @@ paths:
       description: Update a user by ID.
       tags:
         - Users
+      security:
+        - bearerAuth: []
       parameters:
         - $ref: "#/components/parameters/idPathParam"
       requestBody:
@@ -370,6 +478,8 @@ paths:
       description: Delete a user by ID.
       tags:
         - Users
+      security:
+        - bearerAuth: []
       parameters:
         - $ref: "#/components/parameters/idPathParam"
       responses:
@@ -385,6 +495,8 @@ paths:
       description: Change the password for a user by ID.
       tags:
         - Users
+      security:
+        - bearerAuth: []
       parameters:
         - $ref: "#/components/parameters/idPathParam"
       requestBody:
@@ -482,13 +594,12 @@ paths:
             schema:
               required:
                 - name
-                - active
-                - type
               properties:
                 name:
                   type: string
                 active:
                   type: boolean
+                  default: true
                 type:
                   type: string
                   enum: [TICKET, BID, INVOICE]
@@ -593,6 +704,7 @@ paths:
                   type: string
                 active:
                   type: boolean
+                  default: true
                 type:
                   type: string
                   enum: [TICKET, BID, INVOICE]
@@ -663,6 +775,12 @@ paths:
         - $ref: "#/components/parameters/sortTypeParam"
         - $ref: "#/components/parameters/sortByParam"
         - $ref: "#/components/parameters/searchParam"
+        - in: query
+          name: expand
+          description: expand user object
+          schema:
+            type: string
+            example: "user"
       responses:
         "200":
           description: List of invoices.
@@ -716,7 +834,57 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Invoice"
+              type: object
+              required:
+                - "categoryId"
+                - "invoiceNumber"
+                - "amountDue"
+              properties:
+                categoryId:
+                  type: string
+                  example: 64febc56e095fa78c7fb69ec
+                invoiceNumber:
+                  type: string
+                  description: Invoice number.
+                  example: "INV-2023-001"
+                dateOfCreation:
+                  type: string
+                  format: date-time
+                  description: Date of invoice creation.
+                  example: "2023-09-15T10:30:00Z"
+                dateSent:
+                  type: string
+                  format: date-time
+                  description: Date when the invoice was sent.
+                  example: "2023-09-20T12:45:00Z"
+                dateDue:
+                  type: string
+                  format: date-time
+                  description: Due date for the invoice.
+                  example: "2023-10-05T23:59:59Z"
+                tax:
+                  type: number
+                  description: Tax amount for the invoice.
+                  example: 100
+                discount:
+                  type: number
+                  description: Discount amount applied to the invoice.
+                  example: 20
+                amountDue:
+                  type: number
+                  description: Total amount due on the invoice.
+                  example: 800
+                brief:
+                  type: string
+                  description: Brief description or notes related to the invoice.
+                  example: "Payment due upon receipt."
+                status:
+                  type: string
+                  enum:
+                    - NEW
+                    - COMPLETE
+                  description: Status of the invoice (new or complete).
+                  example: "NEW"
       responses:
         "201":
           description: Invoice created successfully.
@@ -767,6 +935,12 @@ paths:
         - bearerAuth: []
       parameters:
         - $ref: "#/components/parameters/idPathParam"
+        - in: query
+          name: expand
+          description: expand user object
+          schema:
+            type: string
+            example: "user"
       responses:
         "200":
           description: Invoice retrieved successfully.
@@ -804,7 +978,53 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Invoice"
+              type: object
+              properties:
+                categoryId:
+                  type: string
+                  example: 64febc56e095fa78c7fb69ec
+                invoiceNumber:
+                  type: string
+                  description: Invoice number.
+                  example: "INV-2023-001"
+                dateOfCreation:
+                  type: string
+                  format: date-time
+                  description: Date of invoice creation.
+                  example: "2023-09-15T10:30:00Z"
+                dateSent:
+                  type: string
+                  format: date-time
+                  description: Date when the invoice was sent.
+                  example: "2023-09-20T12:45:00Z"
+                dateDue:
+                  type: string
+                  format: date-time
+                  description: Due date for the invoice.
+                  example: "2023-10-05T23:59:59Z"
+                tax:
+                  type: number
+                  description: Tax amount for the invoice.
+                  example: 100
+                discount:
+                  type: number
+                  description: Discount amount applied to the invoice.
+                  example: 20
+                amountDue:
+                  type: number
+                  description: Total amount due on the invoice.
+                  example: 800
+                brief:
+                  type: string
+                  description: Brief description or notes related to the invoice.
+                  example: "Payment due upon receipt."
+                status:
+                  type: string
+                  enum:
+                    - NEW
+                    - COMPLETE
+                  description: Status of the invoice (new or complete).
+                  example: "NEW"
       responses:
         "200":
           description: Invoice updated successfully.
@@ -919,7 +1139,61 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Bid"
+              type: object
+              properties:
+                buyerId:
+                  type: string
+                  description: The ID of the buyer.
+                  example: 64fcfd337535c17025069ae3
+                sellerId:
+                  type: string
+                  description: The ID of the seller.
+                  example: 64fcfd337535c17025069ae3
+                categoryId:
+                  type: string
+                  description: The ID of the category.
+                  example: 64fcfd337535c17025069ae3
+                bidNumber:
+                  type: integer
+                  description: The bid number.
+                dateOfBid:
+                  type: string
+                  format: date-time
+                  description: The date and time when the bid was placed.
+                bidStatus:
+                  type: string
+                  enum: [ACCEPTED, REJECTED, SELECTED, WAITING]
+                  default: WAITING
+                  description: The status of the bid.
+                paymentType:
+                  type: string
+                  enum: [CARD, CASH, CHEQUE, ESCROW]
+                  default: CARD
+                  description: The payment type.
+                price:
+                  type: integer
+                  description: The price of the bid.
+                tax:
+                  type: integer
+                  description: The tax amount.
+                discount:
+                  type: integer
+                  description: The discount amount.
+                amountDue:
+                  type: integer
+                  description: The amount due.
+                brief:
+                  type: string
+                  description: A brief description of the bid.
+              required:
+                - categoryId
+                - bidNumber
+                - dateOfBid
+                - price
+                - bidStatus
+                - paymentType
+                - tax
+                - amountDue
       responses:
         "201":
           description: Bid created successfully.
@@ -974,6 +1248,12 @@ paths:
         - bearerAuth: []
       parameters:
         - $ref: "#/components/parameters/idPathParam"
+        - in: query
+          name: expand
+          description: expand user object
+          schema:
+            type: string
+            example: "user"
       responses:
         "200":
           description: Bid retrieved successfully.
@@ -999,7 +1279,52 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Bid"
+              type: object
+              properties:
+                buyerId:
+                  type: string
+                  description: The ID of the buyer.
+                  example: 64fcfd337535c17025069ae3
+                sellerId:
+                  type: string
+                  description: The ID of the seller.
+                  example: 64fcfd337535c17025069ae3
+                categoryId:
+                  type: string
+                  description: The ID of the category.
+                  example: 64fcfd337535c17025069ae3
+                bidNumber:
+                  type: integer
+                  description: The bid number.
+                dateOfBid:
+                  type: string
+                  format: date-time
+                  description: The date and time when the bid was placed.
+                bidStatus:
+                  type: string
+                  enum: [ACCEPTED, REJECTED, SELECTED, WAITING]
+                  default: WAITING
+                  description: The status of the bid.
+                paymentType:
+                  type: string
+                  enum: [CARD, CASH, CHEQUE, ESCROW]
+                  default: CARD
+                  description: The payment type.
+                price:
+                  type: integer
+                  description: The price of the bid.
+                tax:
+                  type: integer
+                  description: The tax amount.
+                discount:
+                  type: integer
+                  description: The discount amount.
+                amountDue:
+                  type: integer
+                  description: The amount due.
+                brief:
+                  type: string
+                  description: A brief description of the bid.
       responses:
         "200":
           description: Bid updated successfully.
@@ -1041,6 +1366,12 @@ paths:
         - $ref: "#/components/parameters/sortTypeParam"
         - $ref: "#/components/parameters/sortByParam"
         - $ref: "#/components/parameters/searchParam"
+        - in: query
+          name: expand
+          description: expand user object
+          schema:
+            type: string
+            example: "user"
       responses:
         "200":
           description: List of tickets.
@@ -1094,7 +1425,45 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Ticket"
+              type: object
+              properties:
+                categoryId:
+                  type: string
+                  description: The ID of the category associated with the ticket.
+                  default: 64fcfd337535c17025069ab3
+                ticketNumber:
+                  type: integer
+                  description: The ticket number.
+                name:
+                  type: string
+                  description: The name of the ticket holder.
+                email:
+                  type: string
+                  format: email
+                  description: The email address of the ticket holder.
+                phone:
+                  type: string
+                  description: The phone number of the ticket holder.
+                ticketSubject:
+                  type: string
+                  description: The subject of the ticket.
+                dateOfCreation:
+                  type: string
+                  format: date-time
+                  description: The date and time when the ticket was created.
+                type:
+                  type: string
+                  enum: [WEB_DESIGN, LOGO_DESIGN, BRANDING, SOFTWARE_CONSULTING]
+                  default: WEB_DESIGN
+                  description: The type of the ticket.
+              required:
+                - categoryId
+                - ticketNumber
+                - name
+                - email
+                - phone
+                - ticketSubject
+                - dateOfCreation
       responses:
         "201":
           description: Ticket created successfully.
@@ -1137,6 +1506,12 @@ paths:
         - bearerAuth: []
       parameters:
         - $ref: "#/components/parameters/idPathParam"
+        - in: query
+          name: expand
+          description: expand user object
+          schema:
+            type: string
+            example: "user"
       responses:
         "200":
           description: Ticket retrieved successfully.
@@ -1162,7 +1537,37 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Ticket"
+              type: object
+              properties:
+                categoryId:
+                  type: string
+                  description: The ID of the category associated with the ticket.
+                  example: 64fcfd337535c17025069ab3
+                ticketNumber:
+                  type: integer
+                  description: The ticket number.
+                name:
+                  type: string
+                  description: The name of the ticket holder.
+                email:
+                  type: string
+                  format: email
+                  description: The email address of the ticket holder.
+                phone:
+                  type: string
+                  description: The phone number of the ticket holder.
+                ticketSubject:
+                  type: string
+                  description: The subject of the ticket.
+                dateOfCreation:
+                  type: string
+                  format: date-time
+                  description: The date and time when the ticket was created.
+                type:
+                  type: string
+                  enum: [WEB_DESIGN, LOGO_DESIGN, BRANDING, SOFTWARE_CONSULTING]
+                  default: WEB_DESIGN
+                  description: The type of the ticket.
       responses:
         "200":
           description: Ticket updated successfully.
@@ -1250,9 +1655,8 @@ components:
       required: true
       description: The unique identifier of the item.
       schema:
-        type: integer
-        format: int32
-        example: 1
+        type: string
+        example: 64fcfd337535c17025069ab3
   responses:
     "500":
       description: "Internal Server Error"
@@ -1518,18 +1922,23 @@ components:
       required:
         - id
         - userId
+        - adminId
         - name
-        - active
-        - type
       properties:
         id:
-          type: integer
+          type: string
+          example: 64fcfd337535c17025069ab3
+        adminId:
+          type: string
+          example: 64fcfd337535c17025069ab3
         userId:
-          type: integer
+          type: string
+          example: 64fcfd337535c17025069ab3
         name:
           type: string
         active:
           type: boolean
+          default: true
         type:
           type: string
           enum: [TICKET, BID, INVOICE]
@@ -1538,20 +1947,24 @@ components:
           $ref: "#/components/schemas/Timestamp"
     Invoice:
       type: object
+      required:
+        - id
+        - adminId
+        - userId
+        - invoiceNumber
       properties:
-        _id: # Use _id to represent MongoDB ObjectId
+        id:
           type: string
-          description: MongoDB ObjectId for the invoice.
-          example: "5f4d6216ef61f0e8f3c990e1"
+          example: 64fcfd337535c17025069ab3
+        adminId:
+          type: string
+          example: 64fcfd337535c17025069ab3
         userId:
-          type: integer
-          format: int32
-          description: ID of the user associated with this invoice.
-          example: 123
+          type: string
+          example: 64fcfd337535c17025069ab3
         categoryId:
           type: string
-          description: Category associated with this invoice.
-          example: "12345"
+          example: "64fcfd337535c17025069ab3"
         invoiceNumber:
           type: string
           description: Invoice number.
@@ -1573,17 +1986,14 @@ components:
           example: "2023-10-05T23:59:59Z"
         tax:
           type: number
-          format: float
           description: Tax amount for the invoice.
-          example: 100.0
+          example: 100
         discount:
           type: number
-          format: float
           description: Discount amount applied to the invoice.
-          example: 20.0
+          example: 20
         amountDue:
           type: number
-          format: float
           description: Total amount due on the invoice.
           example: 800.0
         brief:
@@ -1596,44 +2006,40 @@ components:
             - NEW
             - COMPLETE
           description: Status of the invoice (new or complete).
-          example: "NEW"
+          default: "NEW"
         timestamp:
           $ref: "#/components/schemas/Timestamp"
-      required:
-        - userId
-        - invoiceNumber
-        - dateOfCreation
-        - dateDue
-        - status
       xml:
         name: Invoice
     Bid:
       type: object
+      required:
+        - id
+        - adminId
+        - userId
+        - categoryId
+        - bidNumber
+        - price
+        - timestamp
       properties:
         id:
-          type: integer
-          format: int32
-          description: Unique identifier for the bid.
-          example: 1
+          type: string
+          example: 64fcfd337535c17025069ab3
+        adminId:
+          type: string
+          example: 64fcfd337535c17025069ab3
         userId:
-          type: integer
-          format: int32
-          description: ID of the user who initiated the bid.
-          example: 123
+          type: string
+          example: 64fcfd337535c17025069ab3
         buyerId:
-          type: integer
-          format: int32
-          description: ID of the buyer associated with this bid.
-          example: 456
+          type: string
+          example: 64fcfd337535c17025069ab3
         sellerId:
-          type: integer
-          format: int32
-          description: ID of the seller associated with this bid.
-          example: 789
+          type: string
+          example: 64fcfd337535c17025069ab3
         categoryId:
           type: string
-          description: ID of the category associated with this bid.
-          example: "abc123"
+          example: 64fcfd337535c17025069ab3
         bidNumber:
           type: integer
           format: int32
@@ -1648,12 +2054,12 @@ components:
           type: string
           description: Status of the bid.
           enum: [ACCEPTED, REJECTED, SELECTED, WAITING]
-          example: "WAITING"
+          default: "WAITING"
         paymentType:
           type: string
           enum: [CARD, CASH, CHEQUE, ESCROW]
           description: Payment type for the bid.
-          example: "CARD"
+          default: "CARD"
         price:
           type: integer
           format: int32
@@ -1680,24 +2086,36 @@ components:
           example: "Payment due upon completion."
         timestamp:
           $ref: "#/components/schemas/Timestamp"
-      required:
-        - userId
-        - categoryId
-        - bidNumber
-        - bidStatus
-        - price
-        - timestamp
       xml:
         name: Bid
     Ticket:
       type: object
+      required:
+        - "id"
+        - "adminId"
+        - "userId"
+        - "categoryId"
+        - "ticketNumber"
+        - "name"
+        - "email"
+        - "phone"
+        - "ticketSubject"
+        - "dateOfCreation"
+        - "type"
+        - "timestamp"
       properties:
         id:
-          type: integer
+          type: string
+          example: 64fcfd337535c17025069ab3
+        adminId:
+          type: string
+          example: 64fcfd337535c17025069ab3
         userId:
-          type: integer
+          type: string
+          example: 64fcfd337535c17025069ab3
         categoryId:
-          type: integer
+          type: string
+          example: 64fcfd337535c17025069ab3
         ticketNumber:
           type: integer
         name:

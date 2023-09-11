@@ -8,6 +8,11 @@ const {
 
 const ticketSchema = new Schema(
   {
+    adminId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",

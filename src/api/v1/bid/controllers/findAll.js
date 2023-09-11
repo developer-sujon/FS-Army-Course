@@ -1,6 +1,6 @@
 //Internal Lib Import
 const { defaults } = require("../../../../config");
-const { categoryService } = require("../../../../services");
+const { bidService } = require("../../../../services");
 const {
   getTransformedItems,
   paginationGenerator,
@@ -18,7 +18,7 @@ const findAll = async (req, res, next) => {
 
   try {
     //data
-    const categories = await categoryService.findAll(adminId, {
+    const bids = await bidService.findAll(adminId, {
       page,
       limit,
       sortType,
@@ -26,14 +26,16 @@ const findAll = async (req, res, next) => {
       search,
       expand,
     });
+
     const transFormedData = getTransformedItems({
-      items: categories,
+      items: bids,
       selection: [],
-      path: "/categories",
+      path: "/bids",
     });
 
     // pagination
-    const totalItems = await categoryService.count({ search });
+    const totalItems = await bidService.count({ search });
+
     const pagination = paginationGenerator({ totalItems, limit, page });
 
     // HATEOAS Links

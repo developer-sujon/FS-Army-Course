@@ -1,18 +1,17 @@
 //Internal Lib Import
-const { categoryService } = require("../../../../services");
+const { invoiceService } = require("../../../../services");
 
 const updateProperties = async (req, res, next) => {
   const { id } = req.params;
-
   try {
-    const category = await categoryService.updateProperties(id, req.body);
+    const invoice = await invoiceService.updateProperties(id, req.body);
 
     const response = {
       code: 200,
-      message: "category updated successfully",
-      data: category,
+      message: "invoice updated successfully",
+      data: invoice,
       links: {
-        self: `/categories/${category.id}`,
+        self: `/invoices/${invoice.id}`,
       },
     };
 

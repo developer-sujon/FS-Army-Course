@@ -31,6 +31,11 @@ const socialMediaSchema = new Schema(
 
 const profileSchema = new Schema(
   {
+    adminId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     userId: {
       type: Schema.Types.ObjectId,
       ref: "User",

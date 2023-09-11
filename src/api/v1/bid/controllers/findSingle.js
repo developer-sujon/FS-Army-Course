@@ -1,14 +1,14 @@
 //Internal Lib Import
-const { categoryService } = require("../../../../services");
+const { bidService } = require("../../../../services");
 
 const findSingle = async (req, res, next) => {
   const id = req.params.id;
   const expand = req.query.expand || "";
   try {
-    const category = await categoryService.findSingle({ id, expand });
+    const bid = await bidService.findSingle({ id, expand });
     const response = {
       statusCode: 200,
-      data: category,
+      data: bid,
     };
     res.json(response);
   } catch (e) {

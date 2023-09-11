@@ -5,26 +5,6 @@ const { notFoundException, badRequestException } = require("../../utils/error");
 const { defaults } = require("../../config");
 
 /**
- * Count all article
- * @param {*} param0
- * @returns
- */
-const count = ({ search = "" }) => {
-  const filter = {
-    $or: [
-      {
-        name: { $regex: search, $options: "i" },
-      },
-      {
-        type: { $regex: search, $options: "i" },
-      },
-    ],
-  };
-
-  return Category.count(filter);
-};
-
-/**
  * Create a new category
  * @param {*} param0
  * @returns {Promise<Category>}
@@ -34,12 +14,14 @@ const createItem = async ({
   active = false,
   type = categoriesType.BID,
   userId,
+  adminId,
 }) => {
   const category = await new Category({
     name,
     active,
     type,
     userId,
+    adminId,
   }).save();
 
   return {
@@ -54,7 +36,7 @@ const createItem = async ({
  * @returns {Promise<Category[]>}
  */
 const findAll = async (
-  userId,
+  adminId,
   {
     page = defaults.page,
     limit = defaults.limit,
@@ -69,7 +51,7 @@ const findAll = async (
   const filter = {
     $and: [
       {
-        userId,
+        adminId,
       },
       {
         $or: [
@@ -90,21 +72,11 @@ const findAll = async (
     .skip(page * limit - limit)
     .limit(limit);
 
-  // if (expand.includes("user")) {
-  //   categories.forEach(async (category) => {
-  //     await category.populate({
-  //       path: "userId",
-  //       select: "name",
-  //       strictPopulate: false,
-  //     });
-  //   });
-  // }
-
   return categories.map((category) => ({
     ...category._doc,
     user: category.userId,
     id: category.id,
-    userId,
+    userId: undefined,
   }));
 };
 
@@ -113,14 +85,10 @@ const findAll = async (
  * @param {*} param0
  * @returns {Promise<Category>}
  */
-const findSingle = async ({ userId, id, expand = "" }) => {
+const findSingle = async ({ id, expand = "" }) => {
   expand = expand.split(",").map((item) => item.trim());
   const category = await Category.findById(id);
   if (!category) {
-    throw notFoundException();
-  }
-
-  if (category._doc.userId.toString() !== userId) {
     throw notFoundException();
   }
 
@@ -130,9 +98,11 @@ const findSingle = async ({ userId, id, expand = "" }) => {
       select: "name",
       strictPopulate: false,
     });
+    category._doc.id = category.id;
+    category._doc.user = category.userId;
+    category._doc.userId = category.userId._id;
   }
-  category._doc.user = category.userId;
-  category._doc.userId = category.userId._id;
+
   return category;
 };
 
@@ -143,15 +113,14 @@ const findSingle = async ({ userId, id, expand = "" }) => {
  */
 const updateProperties = async (
   id,
-  { name, active = false, type = categoriesType.BID },
-  userId
+  { name, active = false, type = categoriesType.BID }
 ) => {
   const category = await Category.findById(id);
   if (!category) {
     throw notFoundException();
   }
 
-  const payload = { name, active, type, userId };
+  const payload = { name, active, type };
 
   Object.keys(payload).forEach((key) => {
     category[key] = payload[key] ?? category[key];
@@ -162,7 +131,7 @@ const updateProperties = async (
 };
 
 /**
- * Delete a new category
+ * Delete a category
  * @param {*} param0
  * @returns {Promise<String>}
  */
@@ -172,32 +141,49 @@ const removeItem = async (id) => {
     throw notFoundException();
   }
 
-  const associalBid = await Bid.findOne({ categoryId: id });
-  if (associalBid) {
-    throw badRequestException("this category associate bid");
+  const associatedBid = await Bid.findOne({ categoryId: id });
+  if (associatedBid) {
+    throw badRequestException("this category associated bid");
   }
 
-  const associalTicket = await Ticket.findOne({ categoryId: id });
-  if (associalTicket) {
-    throw badRequestException("this category associate ticket");
+  const associatedTicket = await Ticket.findOne({ categoryId: id });
+  if (associatedTicket) {
+    throw badRequestException("this category associated ticket");
   }
 
-  const associalInvoice = await Invoice.findOne({ categoryId: id });
-  if (associalInvoice) {
-    throw badRequestException("this category associate invoice");
+  const associatedInvoice = await Invoice.findOne({ categoryId: id });
+  if (associatedInvoice) {
+    throw badRequestException("this category associated invoice");
   }
-
-  // TODO:
-  // Asynchronously Check all associated categories
 
   return Category.findByIdAndDelete(id);
 };
 
-const checkOwnership = async ({ resourceId, userId }) => {
+/**
+ * Count all article
+ * @param {*} param0
+ * @returns
+ */
+const count = ({ search = "" }) => {
+  const filter = {
+    $or: [
+      {
+        name: { $regex: search, $options: "i" },
+      },
+      {
+        type: { $regex: search, $options: "i" },
+      },
+    ],
+  };
+
+  return Category.count(filter);
+};
+
+const checkOwnership = async ({ resourceId, adminId }) => {
   const category = await Category.findById(resourceId);
   if (!category) throw notFoundException();
 
-  if (category._doc.userId.toString() === userId) {
+  if (category._doc.adminId.toString() === adminId) {
     return true;
   }
   return false;

@@ -8,6 +8,11 @@ const {
 } = require("../constant/enums");
 
 const bidSchema = new Schema({
+  adminId: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
   userId: {
     type: Schema.Types.ObjectId,
     ref: "User",
@@ -32,6 +37,7 @@ const bidSchema = new Schema({
   },
   dateOfBid: {
     type: Date,
+    default: Date.now,
     required: true,
   },
   bidStatus: {
@@ -44,6 +50,7 @@ const bidSchema = new Schema({
     type: String,
     enum: paymentEnum,
     default: paymentType.CARD,
+    required: true,
   },
   price: {
     type: Number,
@@ -52,13 +59,13 @@ const bidSchema = new Schema({
   tax: {
     type: Number,
     required: true,
+    default: 0,
   },
   discount: {
     type: Number,
   },
   amountDue: {
     type: Number,
-    required: true,
   },
   brief: {
     type: String,

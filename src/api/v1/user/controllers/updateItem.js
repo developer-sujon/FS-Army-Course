@@ -1,18 +1,19 @@
 //Internal Lib Import
-const { categoryService } = require("../../../../services");
+const { userService } = require("../../../../services");
 
 const updateProperties = async (req, res, next) => {
   const { id } = req.params;
+  const { userId } = req.user;
 
   try {
-    const category = await categoryService.updateProperties(id, req.body);
+    const user = await userService.updateProperties(id, req.body, userId);
 
     const response = {
       code: 200,
-      message: "category updated successfully",
-      data: category,
+      message: "user updated successfully",
+      data: user,
       links: {
-        self: `/categories/${category.id}`,
+        self: `/users/${user.id}`,
       },
     };
 

@@ -1,6 +1,6 @@
 //Internal Lib Import
 const { defaults } = require("../../../../config");
-const { categoryService } = require("../../../../services");
+const { invoiceService } = require("../../../../services");
 const {
   getTransformedItems,
   paginationGenerator,
@@ -8,7 +8,7 @@ const {
 } = require("../../../../utils/query");
 
 const findAll = async (req, res, next) => {
-  const adminId = req.user.adminId;
+  const userId = req.user.id;
   const page = req.query.page || defaults.page;
   const limit = req.query.limit || defaults.limit;
   const sortType = req.query.sort_type || defaults.sortType;
@@ -18,7 +18,7 @@ const findAll = async (req, res, next) => {
 
   try {
     //data
-    const categories = await categoryService.findAll(adminId, {
+    const invoices = await invoiceService.findAll(userId, {
       page,
       limit,
       sortType,
@@ -27,13 +27,13 @@ const findAll = async (req, res, next) => {
       expand,
     });
     const transFormedData = getTransformedItems({
-      items: categories,
+      items: invoices,
       selection: [],
-      path: "/categories",
+      path: "/invoices",
     });
 
     // pagination
-    const totalItems = await categoryService.count({ search });
+    const totalItems = await invoiceService.count({ search });
     const pagination = paginationGenerator({ totalItems, limit, page });
 
     // HATEOAS Links

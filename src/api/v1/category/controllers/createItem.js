@@ -9,6 +9,7 @@ const createItem = async (req, res, next) => {
       active,
       type,
       userId: req.user.id,
+      adminId: req.user.adminId,
     });
 
     const response = {
