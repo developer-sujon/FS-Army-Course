@@ -1,3 +1,6 @@
+//External Lib Import
+const mongoose = require("mongoose");
+
 //Internal Lib Import
 const { userService } = require("../../../../services");
 const {
@@ -23,8 +26,12 @@ const createItem = async (req, res, next) => {
     role = roleType.FREELANCER,
     status = statusType.PENDING,
   } = req.body;
+
+  // Using Mongoose's default connection
+  const session = await mongoose.startSession();
   try {
-    const user = await userService.createUser({
+    await session.startTransaction();
+    const user = await userService.createUser(session, {
       name,
       email,
       password,
@@ -32,8 +39,9 @@ const createItem = async (req, res, next) => {
       status,
     });
 
-    const profile = await userService.createProfile({
+    const profile = await userService.createProfile(session, {
       userId: user.id,
+      adminId: user.id,
       name,
       email,
       password,
@@ -63,9 +71,13 @@ const createItem = async (req, res, next) => {
         self: `/users/${user.id}`,
       },
     };
+    await session.commitTransaction();
     res.status(201).json(response);
   } catch (e) {
+    await session.abortTransaction();
     next(e);
+  } finally {
+    session.endSession();
   }
 };
 

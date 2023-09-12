@@ -1,5 +1,5 @@
 //Internal Lib Import
-const { unauthorizedException } = require("../utils/error");
+const { forbiddenException } = require("../utils/error");
 
 const authorize =
   (roles = ["admin"]) =>
@@ -9,7 +9,7 @@ const authorize =
       return next();
     }
 
-    return next(unauthorizedException());
+    return next(forbiddenException());
   };
 
 module.exports = authorize;

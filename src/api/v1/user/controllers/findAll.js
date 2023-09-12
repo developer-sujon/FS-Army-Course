@@ -8,6 +8,7 @@ const {
 } = require("../../../../utils/query");
 
 const findAll = async (req, res, next) => {
+  const adminId = req.user.adminId;
   const page = req.query.page || defaults.page;
   const limit = req.query.limit || defaults.limit;
   const sortType = req.query.sort_type || defaults.sortType;
@@ -17,7 +18,7 @@ const findAll = async (req, res, next) => {
 
   try {
     //data
-    const users = await userService.findAll({
+    const users = await userService.findAll(adminId, {
       page,
       limit,
       sortType,
@@ -33,7 +34,7 @@ const findAll = async (req, res, next) => {
     });
 
     // pagination
-    const totalItems = await userService.count({ search });
+    const totalItems = await userService.count({ adminId, search });
     const pagination = paginationGenerator({ totalItems, limit, page });
 
     // HATEOAS Links

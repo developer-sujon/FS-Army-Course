@@ -3,10 +3,9 @@ const { userService } = require("../../../../services");
 
 const findSingle = async (req, res, next) => {
   const id = req.params.id;
-  const adminId = req.user.adminId;
   const expand = req.query.expand || "";
   try {
-    const user = await userService.findSingle({ adminId, id, expand });
+    const user = await userService.findSingle({ id, expand });
     const response = {
       statusCode: 200,
       data: user,

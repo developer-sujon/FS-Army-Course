@@ -1,3 +1,6 @@
+//External Lib Import
+const { ObjectId } = require("mongodb");
+
 //Internal Lib Import
 const { User, Profile } = require("../../models");
 const {
@@ -5,6 +8,8 @@ const {
   status: { statusType },
 } = require("../../constant/enums");
 const { defaults } = require("../../config");
+const { notFoundException } = require("../../utils/error");
+const { generateHash } = require("../../utils/hashing");
 
 /**
  * Count all user
@@ -13,7 +18,19 @@ const { defaults } = require("../../config");
  */
 const count = ({ search = "" }) => {
   const filter = {
-    name: { $regex: search, $options: "i" },
+    $and: [
+      { adminId },
+      {
+        $or: [
+          {
+            name: { $regex: search, $options: "i" },
+          },
+          {
+            email: { $regex: search, $options: "i" },
+          },
+        ],
+      },
+    ],
   };
   return User.count(filter);
 };
@@ -21,22 +38,33 @@ const count = ({ search = "" }) => {
 /**
  * find all tickets
  * @param {*} param0
- * @returns {Promise<{users:User[], profile:Profile[]}>}
+ * @returns {Promise<User[]}>}
  */
-const findAll = async ({
-  page = defaults.page,
-  limit = defaults.limit,
-  sortType = defaults.sortType,
-  sortBy = defaults.sortBy,
-  search = defaults.search,
-  expand = "",
-}) => {
+const findAll = async (
+  adminId,
+  {
+    page = defaults.page,
+    limit = defaults.limit,
+    sortType = defaults.sortType,
+    sortBy = defaults.sortBy,
+    search = defaults.search,
+    expand = "",
+  }
+) => {
   expand = expand.split(",").map((item) => item.trim());
   const sortStr = `${sortType === "dsc" ? "-" : ""}${sortBy}`;
   const filter = {
-    $or: [
+    $and: [
+      { adminId },
       {
-        name: { $regex: search, $options: "i" },
+        $or: [
+          {
+            name: { $regex: search, $options: "i" },
+          },
+          {
+            email: { $regex: search, $options: "i" },
+          },
+        ],
       },
     ],
   };
@@ -46,12 +74,11 @@ const findAll = async ({
     .sort(sortStr)
     .skip(page * limit - limit)
     .limit(limit);
-
   return profiles.map((profile) => ({
     ...profile._doc,
     user: profile.userId,
     id: profile.id,
-    userId: profile.userId._id,
+    userId: undefined,
   }));
 };
 
@@ -60,33 +87,30 @@ const findAll = async ({
  * @param {*} param0
  * @returns {Promise<User>}
  */
-const findSingle = async ({ adminId, id, expand = "" }) => {
+const findSingle = async ({ id, expand = "" }) => {
   expand = expand.split(",").map((item) => item.trim());
-  const user = await User.findById(id);
+  const user = await Profile.findById(id);
   if (!user) {
     throw notFoundException();
   }
 
-  // if (user._doc.userId.toString() !== userId) {
-  //   throw notFoundException();
-  // }
-
-  if (expand.includes("profile")) {
-    // await user.populate({
-    //   path: "userId",
-    //   select: "name",
-    //   strictPopulate: false,
-    // });
+  if (expand.includes("user")) {
+    await user.populate({
+      path: "userId",
+      select: "name",
+      strictPopulate: false,
+    });
+    user._doc.user = user.userId;
+    user._doc.userId = undefined;
   }
-  // user._doc.user = user.userId;
-  // user._doc.userId = userId;
+
   return user;
 };
 
 /**
  * update a user
  * @param {*} param0
- * @returns {Promise<{users:User, profile:Profile}>}
+ * @returns {Promise<User[]>}
  */
 const updateProperties = async (
   id,
@@ -109,7 +133,12 @@ const updateProperties = async (
     status,
   }
 ) => {
-  const user = await User.findById(id);
+  const profile = await Profile.findById(id);
+  if (!profile) {
+    throw notFoundException();
+  }
+
+  const user = await User.findById(profile.userId);
   if (!user) {
     throw notFoundException();
   }
@@ -134,11 +163,19 @@ const updateProperties = async (
   };
 
   Object.keys(payload).forEach((key) => {
-    user[key] = payload[key] ?? user[key];
+    profile[key] = payload[key] ?? profile[key];
+    if (
+      payload[key] === "name" ||
+      payload[key] === "email" ||
+      payload[key] === "role" ||
+      payload[key] === "status"
+    ) {
+      user[key] = payload[key] ?? user[key];
+    }
   });
 
-  await user.save();
-  return { ...user._doc, id: user.id };
+  await profile.save();
+  return { ...profile._doc, id: user.id };
 };
 
 const findUserByEmail = async (email) => {
@@ -151,38 +188,46 @@ const userExist = async (email) => {
   return user ? true : false;
 };
 
-const createUser = async ({
-  name,
-  email,
-  password,
-  role = roleType.FREELANCER,
-  status = statusType.PENDING,
-}) => {
+const createUser = async (
+  session,
+  {
+    name,
+    email,
+    password,
+    role = roleType.FREELANCER,
+    status = statusType.PENDING,
+  }
+) => {
   const user = new User({ name, email, password, role, status });
-  await user.save();
+  await user.save({ session });
   return { ...user._doc, id: user.id };
 };
 
-const createProfile = async ({
-  userId,
-  name,
-  email,
-  password,
-  dateOfBirth,
-  gender,
-  brief,
-  profileImage,
-  phone,
-  fax,
-  address,
-  city,
-  state,
-  zip,
-  socialMedia,
-  role = roleType.FREELANCER,
-  status = statusType.PENDING,
-}) => {
+const createProfile = async (
+  session,
+  {
+    adminId,
+    userId,
+    name,
+    email,
+    password,
+    dateOfBirth,
+    gender,
+    brief,
+    profileImage,
+    phone,
+    fax,
+    address,
+    city,
+    state,
+    zip,
+    socialMedia,
+    role = roleType.FREELANCER,
+    status = statusType.PENDING,
+  }
+) => {
   const profile = new Profile({
+    adminId,
     userId,
     name,
     email,
@@ -201,8 +246,54 @@ const createProfile = async ({
     role,
     status,
   });
-  await profile.save();
+  await profile.save({ session });
   return { ...profile._doc, id: profile.id };
+};
+
+/**
+ * Delete a user
+ * @param {*} param0
+ * @returns {Promise<String>}
+ */
+const removeItem = async (id) => {
+  const profile = await Profile.findByIdAndDelete(id);
+  if (!profile) {
+    throw notFoundException();
+  }
+
+  const user = await User.findByIdAndDelete(profile.userId);
+  if (!user) {
+    throw notFoundException();
+  }
+
+  return user;
+};
+
+const checkOwnership = async ({ resourceId, adminId }) => {
+  const user = await Profile.findById(resourceId);
+  if (!user) throw notFoundException();
+
+  if (user._doc.adminId.toString() === adminId) {
+    return true;
+  }
+  return false;
+};
+
+/**
+ * update user password
+ * @param {*} param0
+ * @returns {Promise<User[]>}
+ */
+
+const changePassword = async (id, password) => {
+  const user = await User.findById(id);
+  if (!user) {
+    throw notFoundException();
+  }
+  const hasPass = await generateHash(password);
+  console.log(hasPass);
+  user.password = hasPass;
+  return await user.save();
 };
 
 module.exports = {
@@ -214,4 +305,7 @@ module.exports = {
   count,
   findSingle,
   updateProperties,
+  checkOwnership,
+  removeItem,
+  changePassword,
 };

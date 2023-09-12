@@ -152,12 +152,30 @@ routes
 
 routes
   .route("/api/v1/users/:id")
-  .get(authentication, authorize([roleType.ADMIN]), userControllers.findSingle)
+  .get(
+    authentication,
+    authorize([roleType.ADMIN]),
+    ownership("User"),
+    userControllers.findSingle
+  )
   .patch(
     authentication,
     authorize([roleType.ADMIN]),
-    // ownership("Ticket"),
+    ownership("User"),
     userControllers.updateProperties
+  )
+  .delete(
+    authentication,
+    authorize([roleType.ADMIN]),
+    ownership("User"),
+    userControllers.removeItem
   );
-
+routes
+  .route("/api/v1/users/:id/password")
+  .patch(
+    authentication,
+    authorize([roleType.ADMIN]),
+    ownership("User"),
+    userControllers.changePassword
+  );
 module.exports = routes;

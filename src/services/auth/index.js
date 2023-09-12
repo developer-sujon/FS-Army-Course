@@ -1,20 +1,32 @@
 //Internal Lib Import
-const { userExist, createUser, findUserByEmail } = require("../user");
+const {
+  userExist,
+  createUser,
+  findUserByEmail,
+  createProfile,
+} = require("../user");
 const {
   badRequestException,
   unauthorizedException,
 } = require("../../utils/error");
 const { generateHash, hashMatched } = require("../../utils/hashing");
 const { generateToken } = require("../token");
+const { Profile } = require("../../models");
 
-const register = async ({ name, email, password }) => {
+const register = async (session, { name, email, password }) => {
   const hasUser = await userExist(email);
   if (hasUser) {
     throw badRequestException("User already exist");
   }
 
   password = await generateHash(password);
-  const user = await createUser({ name, email, password });
+  const user = await createUser(session, { name, email, password });
+  await createProfile(session, {
+    adminId: user._id,
+    userId: user._id,
+    name,
+    email,
+  });
 
   return user;
 };

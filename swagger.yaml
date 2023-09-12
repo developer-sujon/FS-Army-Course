@@ -180,12 +180,13 @@ paths:
         - $ref: "#/components/parameters/limitParam"
         - $ref: "#/components/parameters/sortTypeParam"
         - $ref: "#/components/parameters/sortByParam"
+        - $ref: "#/components/parameters/searchParam"
         - in: query
           name: expand
-          description: expand profile
+          description: expand user
           schema:
             type: string
-            example: "profile"
+            example: "user"
       responses:
         "200":
           description: List of users.
@@ -394,6 +395,12 @@ paths:
         - bearerAuth: []
       parameters:
         - $ref: "#/components/parameters/idPathParam"
+        - in: query
+          name: expand
+          description: expand user
+          schema:
+            type: string
+            example: "user"
       responses:
         "200":
           description: User retrieved successfully.
@@ -427,17 +434,97 @@ paths:
               properties:
                 name:
                   type: string
+                  minLength: 3
+                  maxLength: 30
+                  description: The name of the user.
                 email:
                   type: string
+                  format: email
+                  description: The email address of the user (should be unique).
+                password:
+                  type: string
+                  minLength: 8
+                  description: The user's password.
+                dateOfBirth:
+                  type: string
+                  format: date
+                  description: The date of birth of the user.
+                gender:
+                  type: string
+                  minLength: 3
+                  maxLength: 30
+                  description: The gender of the user.
+                brief:
+                  type: string
+                  minLength: 3
+                  maxLength: 100
+                  description: A brief description of the user.
+                profileImage:
+                  type: string
+                  minLength: 3
+                  maxLength: 30
+                  description: The user's profile image URL.
+                phone:
+                  type: string
+                  minLength: 3
+                  maxLength: 30
+                  description: The user's phone number.
+                fax:
+                  type: string
+                  minLength: 3
+                  maxLength: 30
+                  description: The user's fax number.
+                address:
+                  type: string
+                  minLength: 3
+                  maxLength: 30
+                  description: The user's address.
+                city:
+                  type: string
+                  minLength: 3
+                  maxLength: 30
+                  description: The city where the user resides.
+                state:
+                  type: string
+                  minLength: 3
+                  maxLength: 30
+                  description: The state where the user resides.
+                zip:
+                  type: string
+                  minLength: 3
+                  maxLength: 30
+                  description: The postal code of the user's location.
+                socialMedia:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      label:
+                        type: string
+                        minLength: 3
+                        maxLength: 30
+                        description: The label for the social media link.
+                      icon:
+                        type: string
+                        minLength: 3
+                        maxLength: 30
+                        description: The icon associated with the social media link.
+                      link:
+                        type: string
+                        minLength: 3
+                        maxLength: 30
+                        description: The URL of the social media link.
+                  description: An array of social media links.
                 role:
                   type: string
+                  enum: [FREELANCER, OTHER_ROLE] # Define the available roles here
+                  default: FREELANCER
+                  description: The role of the user.
                 status:
                   type: string
-              required:
-                - name
-                - email
-                - role
-                - status
+                  enum: [PENDING, ACTIVE, INACTIVE] # Define the available statuses here
+                  default: PENDING
+                  description: The status of the user.
       responses:
         "200":
           description: User updated successfully.
@@ -1645,7 +1732,7 @@ components:
     searchParam:
       in: query
       name: search
-      description: Search keyword for filtering categories by name.
+      description: Search keyword for filtering items by name.
       schema:
         type: string
         example: title
