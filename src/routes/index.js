@@ -9,6 +9,7 @@ const {
   bidControllers,
   ticketControllers,
   userControllers,
+  reportControllers,
 } = require("../api/v1");
 const {
   role: { roleType },
@@ -177,5 +178,58 @@ routes
     authorize([roleType.ADMIN]),
     ownership("User"),
     userControllers.changePassword
+  );
+
+//user routes
+routes
+  .route("/api/v1/reports/bids")
+  .get(
+    authentication,
+    authorize([roleType.ADMIN]),
+    reportControllers.bidReport
+  );
+
+routes
+  .route("/api/v1/reports/bids/category")
+  .get(
+    authentication,
+    authorize([roleType.ADMIN]),
+    reportControllers.bidCategoryReport
+  );
+routes
+  .route("/api/v1/reports/buyer-seller")
+  .get(
+    authentication,
+    authorize([roleType.ADMIN]),
+    reportControllers.buyerSellerReport
+  );
+
+routes
+  .route("/api/v1/reports/buyer-seller-summary")
+  .get(
+    authentication,
+    authorize([roleType.ADMIN]),
+    reportControllers.buyerSellerSummaryReport
+  );
+routes
+  .route("/api/v1/reports/earnings")
+  .get(
+    authentication,
+    authorize([roleType.ADMIN]),
+    reportControllers.earningReport
+  );
+routes
+  .route("/api/v1/reports/earnings")
+  .get(
+    authentication,
+    authorize([roleType.ADMIN]),
+    reportControllers.earningReport
+  );
+routes
+  .route("/api/v1/reports/earnings/category")
+  .get(
+    authentication,
+    authorize([roleType.ADMIN]),
+    reportControllers.earningCategoryReport
   );
 module.exports = routes;

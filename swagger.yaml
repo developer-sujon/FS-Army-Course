@@ -618,14 +618,20 @@ paths:
         - $ref: "#/components/parameters/pageParam"
         - $ref: "#/components/parameters/limitParam"
         - $ref: "#/components/parameters/sortTypeParam"
-        - $ref: "#/components/parameters/sortByParam"
-        - $ref: "#/components/parameters/searchParam"
+        - in: query
+          name: category_type
+          schema:
+            type: string
+            enum: [TICKET, BID, INVOICE]
+            example: BID
         - in: query
           name: expand
           description: expand user object
           schema:
             type: string
             example: "user"
+        - $ref: "#/components/parameters/sortByParam"
+        - $ref: "#/components/parameters/searchParam"
       responses:
         "200":
           description: List of categories.
@@ -926,6 +932,8 @@ paths:
                 - "categoryId"
                 - "invoiceNumber"
                 - "amountDue"
+                - "price"
+                - "grandTotal"
               properties:
                 categoryId:
                   type: string
@@ -956,6 +964,14 @@ paths:
                 discount:
                   type: number
                   description: Discount amount applied to the invoice.
+                  example: 20
+                price:
+                  type: number
+                  description: Price applied to the invoice.
+                  example: 20
+                grandTotal:
+                  type: number
+                  description: Grand Total applied to the invoice.
                   example: 20
                 amountDue:
                   type: number
@@ -1690,6 +1706,285 @@ paths:
           description: Ticket deleted successfully.
         "404":
           $ref: "#/components/responses/404"
+  /reports/bids:
+    get:
+      summary: Get Bid Reports
+      description: Retrieve a reports of bids.
+      tags:
+        - Reports
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: timeFrame
+          schema:
+            type: string
+            enum: [DAILY, WEEKLY, MONTHLY, YEARLY]
+            example: DAILY
+      responses:
+        "200":
+          description: Retrieve a reports of bids.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        bidStatus:
+                          type: string
+                        date:
+                          type: string
+                          format: date-time
+                        total:
+                          type: integer
+                          format: int32
+
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/400"
+        "403":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/400"
+  /reports/bids/category:
+    get:
+      summary: Get Bid category Reports
+      description: Retrieve a reports of bids category.
+      tags:
+        - Reports
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Retrieve a reports of bids category.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        category:
+                          type: string
+                        total:
+                          type: integer
+                          format: int32
+
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/400"
+        "403":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/400"
+  /reports/buyer-seller:
+    get:
+      summary: Get buyers & sellers Reports
+      description: Retrieve a reports of buyers & sellers.
+      tags:
+        - Reports
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: role
+          schema:
+            type: string
+            enum: [BUYER, SELLER]
+            example: BUYER
+      responses:
+        "200":
+          description: Retrieve a reports of buyers & sellers.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        stats:
+                          type: string
+                        total:
+                          type: integer
+                          format: int32
+
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/400"
+        "403":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/400"
+  /reports/buyer-seller-summary:
+    get:
+      summary: Get Buyer Seller Summary Reports
+      description: Retrieve a reports of Buyer Seller Summary.
+      tags:
+        - Reports
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: timeFrame
+          schema:
+            type: string
+            enum: [DAILY, WEEKLY, MONTHLY, YEARLY]
+            example: DAILY
+        - in: query
+          name: role
+          schema:
+            type: string
+            enum: [BUYER, SELLER]
+            example: BUYER
+      responses:
+        "200":
+          description: Retrieve reports of Buyer Seller Summary.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        stats:
+                          type: string
+                        date:
+                          type: string
+                          format: date-time
+                        total:
+                          type: integer
+                          format: int32
+
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/400"
+        "403":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/400"
+  /reports/earnings:
+    get:
+      summary: Get Earnings Reports
+      description: Retrieve a reports of Earnings.
+      tags:
+        - Reports
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: timeFrame
+          schema:
+            type: string
+            enum: [DAILY, WEEKLY, MONTHLY, YEARLY]
+            example: DAILY
+      responses:
+        "200":
+          description: Retrieve reports of Earnings.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        total:
+                          type: integer
+                          format: int32
+
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/400"
+        "403":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/400"
+  /reports/earnings/category:
+    get:
+      summary: Get Invoice category Reports
+      description: Retrieve a reports of Invoices category.
+      tags:
+        - Reports
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: timeFrame
+          schema:
+            type: string
+            enum: [DAILY, WEEKLY, MONTHLY, YEARLY]
+            example: DAILY
+      responses:
+        "200":
+          description: Retrieve a reports of Invoices category.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        category:
+                          type: string
+                        total:
+                          type: integer
+                          format: int32
+
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/400"
+        "403":
+          $ref: "#/components/responses/400"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/400"
 
 components:
   securitySchemes:

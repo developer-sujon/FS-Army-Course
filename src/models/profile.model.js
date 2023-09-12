@@ -6,6 +6,7 @@ const validator = require("validator");
 const {
   role: { roleEnum, roleType },
   status: { statusEnum, statusType },
+  stats: { statsEnum, statsType },
 } = require("../constant/enums");
 
 const socialMediaSchema = new Schema(
@@ -119,6 +120,11 @@ const profileSchema = new Schema(
       enum: statusEnum,
       default: statusType.PENDING,
       required: true,
+    },
+    stats: {
+      type: String,
+      enum: statsEnum,
+      default: statsType.NEW,
     },
   },
   { timestamps: true, versionKey: false }

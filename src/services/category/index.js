@@ -41,6 +41,7 @@ const findAll = async (
     page = defaults.page,
     limit = defaults.limit,
     sortType = defaults.sortType,
+    categoryType = "",
     sortBy = defaults.sortBy,
     search = defaults.search,
     expand = "",
@@ -52,6 +53,7 @@ const findAll = async (
     $and: [
       {
         adminId,
+        ...(categoryType && { type: categoryType }),
       },
       {
         $or: [

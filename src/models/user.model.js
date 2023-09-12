@@ -6,6 +6,7 @@ const validator = require("validator");
 const {
   role: { roleEnum, roleType },
   status: { statusEnum, statusType },
+  stats: { statsEnum, statsType },
 } = require("../constant/enums");
 
 const userSchema = new Schema(
@@ -45,6 +46,11 @@ const userSchema = new Schema(
       type: String,
       enum: roleEnum,
       default: roleType.FREELANCER,
+    },
+    stats: {
+      type: String,
+      enum: statsEnum,
+      default: statsType.NEW,
     },
     status: {
       type: String,

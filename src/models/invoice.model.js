@@ -19,7 +19,7 @@ const invoiceSchema = new Schema(
       required: true,
     },
     categoryId: {
-      type: String,
+      type: Schema.Types.ObjectId,
       ref: "Category",
       required: true,
     },
@@ -52,6 +52,14 @@ const invoiceSchema = new Schema(
     },
     amountDue: {
       type: Number,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    grandTotal: {
+      type: Number,
+      required: true,
     },
     brief: {
       type: String,

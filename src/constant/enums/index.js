@@ -6,6 +6,8 @@ const ticket = require("./ticket.enum");
 const invoice = require("./invoice.enum");
 const payment = require("./payment.enum");
 const bid = require("./bid.enum");
+const timeFrame = require("./timeFrame.enum");
+const stats = require("./stats.enum");
 
 module.exports = {
   role,
@@ -15,4 +17,6 @@ module.exports = {
   invoice,
   payment,
   bid,
+  timeFrame,
+  stats,
 };

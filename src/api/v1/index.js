@@ -3,6 +3,7 @@ const { invoiceControllers } = require("./invoice");
 const { bidControllers } = require("./bid");
 const { ticketControllers } = require("./ticket");
 const { userControllers } = require("./user");
+const { reportControllers } = require("./report");
 
 module.exports = {
   categoryControllers,
@@ -10,4 +11,5 @@ module.exports = {
   bidControllers,
   ticketControllers,
   userControllers,
+  reportControllers,
 };

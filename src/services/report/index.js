@@ -1,214 +1,252 @@
-//Internal Lib Import
+//External Lib Import
 const {
-  ticket: { ticketTypes },
-} = require("../../constant/enums/");
-const { Ticket } = require("../../models");
-const { notFoundException } = require("../../utils/error");
-const { defaults } = require("../../config");
+  Types: { ObjectId },
+} = require("mongoose");
 
-/**
- * Count all ticket
- * @param {*} param0
- * @returns
- */
-const count = ({ search = "" }) => {
-  const filter = {
-    $or: [
-      // {
-      //   ticketNumber: { $regex: search, $options: "i" },
-      // },
-      {
-        ticketSubject: { $regex: search, $options: "i" },
+//Internal Lib Import
+const { Bid, Profile, Invoice } = require("../../models");
+const genTimeFrame = require("../../utils/genTimeFrame");
+const {
+  timeFrame: { timeFrameEnum },
+  role: { roleType },
+} = require("../../constant/enums");
+
+const bidReport = (adminId, timeFrame) => {
+  const { startDate, endDate } = genTimeFrame(timeFrame);
+
+  const transFormationDate = {
+    ...(timeFrameEnum.includes(timeFrame) && {
+      dateOfBid: {
+        $gte: startDate,
+        $lte: endDate,
       },
-    ],
+    }),
   };
 
-  return Ticket.count(filter);
+  const pipeline = [
+    {
+      $match: {
+        $and: [{ adminId: new ObjectId(adminId) }, transFormationDate],
+      },
+    },
+    {
+      $group: {
+        _id: { bidStatus: "$bidStatus", data: "$dateOfBid" },
+        total: { $sum: 1 },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        bidStatus: "$_id.bidStatus",
+        data: "$_id.data",
+        total: 1,
+      },
+    },
+  ];
+
+  const projectReport = Bid.aggregate(pipeline);
+  return projectReport;
 };
 
-/**
- * Create a new ticket
- * @param {*} param0
- * @returns {Promise<Ticket>}
- */
-const createItem = async ({
-  userId,
-  categoryId,
-  ticketNumber,
-  name,
-  email,
-  phone,
-  ticketSubject,
-  dateOfCreation,
-  type = ticketTypes.WEB_DESIGN,
-}) => {
-  const ticket = await new Ticket({
-    userId,
-    categoryId,
-    ticketNumber,
-    name,
-    email,
-    phone,
-    ticketSubject,
-    dateOfCreation,
-    type,
-  }).save();
+const bidCategoryReport = (adminId) => {
+  const pipeline = [
+    {
+      $match: {
+        adminId: new ObjectId(adminId),
+      },
+    },
+    {
+      $lookup: {
+        from: "categories",
+        localField: "categoryId",
+        foreignField: "_id",
+        as: "category",
+      },
+    },
+    {
+      $project: {
+        category: { $arrayElemAt: ["$category.name", 0] },
+      },
+    },
+    {
+      $group: {
+        _id: { category: "$category" },
+        total: { $sum: 1 },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        category: "$_id.category",
+        total: 1,
+      },
+    },
+  ];
 
-  return {
-    ...ticket._doc,
-    id: ticket.id,
-  };
+  const categoryReport = Bid.aggregate(pipeline);
+  return categoryReport;
 };
 
-/**
- * find all tickets
- * @param {*} param0
- * @returns {Promise<Ticket[]>}
- */
-const findAll = async (
-  userId,
-  {
-    page = defaults.page,
-    limit = defaults.limit,
-    sortType = defaults.sortType,
-    sortBy = defaults.sortBy,
-    search = defaults.search,
-    expand = "",
-  }
+const buyerSellerReport = (adminId, role) => {
+  const pipeline = [
+    {
+      $match: {
+        adminId: new ObjectId(adminId),
+        stats: role,
+      },
+    },
+    {
+      $group: {
+        _id: { stats: "$stats" },
+        total: { $sum: 1 },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        stats: "$_id.stats",
+        total: 1,
+      },
+    },
+  ];
+
+  const categoryReport = Profile.aggregate(pipeline);
+  return categoryReport;
+};
+
+const buyerSellerSummaryReport = (
+  adminId,
+  timeFrame,
+  role = roleType.SELLER
 ) => {
-  expand = expand.split(",").map((item) => item.trim());
-  const sortStr = `${sortType === "dsc" ? "-" : ""}${sortBy}`;
-  const filter = {
-    $and: [
-      {
-        userId,
+  const { startDate, endDate } = genTimeFrame(timeFrame);
+
+  const transFormationDate = {
+    ...(timeFrameEnum.includes(timeFrame) && {
+      createdAt: {
+        $gte: startDate,
+        $lte: endDate,
       },
-      {
-        $or: [
-          // {
-          //   ticketNumber: { $regex: search, $options: "i" },
-          // },
-          {
-            ticketSubject: { $regex: search, $options: "i" },
-          },
+    }),
+  };
+
+  const pipeline = [
+    {
+      $match: {
+        $and: [
+          { adminId: new ObjectId(adminId) },
+          { role },
+          transFormationDate,
         ],
       },
-    ],
+    },
+
+    {
+      $group: {
+        _id: { stats: "$stats", data: "$createdAt" },
+        total: { $sum: 1 },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        stats: "$_id.stats",
+        data: "$_id.data",
+        total: 1,
+      },
+    },
+  ];
+
+  const projectReport = Profile.aggregate(pipeline);
+  return projectReport;
+};
+
+const earningReport = (adminId, timeFrame) => {
+  const { startDate, endDate } = genTimeFrame(timeFrame);
+
+  const transFormationDate = {
+    ...(timeFrameEnum.includes(timeFrame) && {
+      createdAt: {
+        $gte: startDate,
+        $lte: endDate,
+      },
+    }),
   };
 
-  const tickets = await Ticket.find(filter)
-    .populate({ path: "userId", select: "name" })
-    .sort(sortStr)
-    .skip(page * limit - limit)
-    .limit(limit);
+  const pipeline = [
+    {
+      $match: {
+        $and: [{ adminId: new ObjectId(adminId) }, transFormationDate],
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        total: { $sum: "$tax" },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+      },
+    },
+  ];
 
-  return tickets.map((ticket) => ({
-    ...ticket._doc,
-    user: ticket.userId,
-    id: ticket.id,
-    userId,
-  }));
+  const earningReport = Invoice.aggregate(pipeline);
+  return earningReport;
 };
 
-/**
- * find single ticket
- * @param {*} param0
- * @returns {Promise<Ticket>}
- */
-const findSingle = async ({ userId, id, expand = "" }) => {
-  expand = expand.split(",").map((item) => item.trim());
-  const ticket = await Ticket.findById(id);
-  if (!ticket) {
-    throw notFoundException();
-  }
+const earningCategoryReport = (adminId, timeFrame) => {
+  const { startDate, endDate } = genTimeFrame(timeFrame);
 
-  if (ticket._doc.userId.toString() !== userId) {
-    throw notFoundException();
-  }
-
-  if (expand.includes("user")) {
-    await ticket.populate({
-      path: "userId",
-      select: "name",
-      strictPopulate: false,
-    });
-  }
-  ticket._doc.user = ticket.userId;
-  ticket._doc.userId = userId;
-  return ticket;
-};
-
-/**
- * update a ticket
- * @param {*} param0
- * @returns {Promise<Ticket>}
- */
-const updateProperties = async (
-  id,
-  {
-    categoryId,
-    ticketNumber,
-    name,
-    email,
-    phone,
-    ticketSubject,
-    dateOfCreation,
-    type,
-  }
-) => {
-  const ticket = await Ticket.findById(id);
-  if (!ticket) {
-    throw notFoundException();
-  }
-
-  const payload = {
-    categoryId,
-    ticketNumber,
-    name,
-    email,
-    phone,
-    ticketSubject,
-    dateOfCreation,
-    type,
+  const transFormationDate = {
+    ...(timeFrameEnum.includes(timeFrame) && {
+      dateOfBid: {
+        $gte: startDate,
+        $lte: endDate,
+      },
+    }),
   };
 
-  Object.keys(payload).forEach((key) => {
-    ticket[key] = payload[key] ?? ticket[key];
-  });
+  const pipeline = [
+    {
+      $match: {
+        $and: [{ adminId: new ObjectId(adminId) }, transFormationDate],
+      },
+    },
+    {
+      $lookup: {
+        from: "categories",
+        localField: "categoryId",
+        foreignField: "_id",
+        as: "category",
+      },
+    },
+    {
+      $group: {
+        _id: { category: { $arrayElemAt: ["$category.name", 0] } },
+        total: { $sum: "$tax" },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        category: "$_id.category",
+        total: 1,
+      },
+    },
+  ];
 
-  await ticket.save();
-  return { ...ticket._doc, id: ticket.id };
-};
-
-/**
- * Delete a ticket
- * @param {*} param0
- * @returns {Promise<String>}
- */
-const removeItem = async (id) => {
-  const ticket = await Ticket.findById(id);
-  if (!ticket) {
-    throw notFoundException();
-  }
-  return Ticket.findByIdAndDelete(id);
-};
-
-const checkOwnership = async ({ resourceId, userId }) => {
-  const ticket = await Ticket.findById(resourceId);
-  if (!ticket) throw notFoundException();
-
-  if (ticket._doc.userId.toString() === userId) {
-    return true;
-  }
-  return false;
+  const invoiceCategoryReport = Invoice.aggregate(pipeline);
+  return invoiceCategoryReport;
 };
 
 module.exports = {
-  count,
-  createItem,
-  findAll,
-  findSingle,
-  updateProperties,
-  removeItem,
-  checkOwnership,
+  bidReport,
+  bidCategoryReport,
+  buyerSellerReport,
+  buyerSellerSummaryReport,
+  earningReport,
+  earningCategoryReport,
 };

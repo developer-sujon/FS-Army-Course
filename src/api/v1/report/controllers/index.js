@@ -1,14 +1,16 @@
 //Internal Lib Import
-const createItem = require("./createItem");
-const findAll = require("./findAll");
-const findSingle = require("./findSingle");
-const updateProperties = require("./updateItem");
-const removeItem = require("./removeItem");
+const bidReport = require("./bidReport");
+const bidCategoryReport = require("./bidCategoryReport");
+const buyerSellerReport = require("./buyerSellerReport");
+const buyerSellerSummaryReport = require("./buyerSellerSummaryReport");
+const earningReport = require("./earningReport");
+const earningCategoryReport = require("./earningCategoryReport");
 
 module.exports = {
-  createItem,
-  findAll,
-  findSingle,
-  updateProperties,
-  removeItem,
+  bidReport,
+  bidCategoryReport,
+  buyerSellerReport,
+  buyerSellerSummaryReport,
+  earningReport,
+  earningCategoryReport,
 };

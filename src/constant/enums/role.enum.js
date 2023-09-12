@@ -1,5 +1,4 @@
 const roleType = {
-  FREELANCER: "FREELANCER",
   BUYER: "BUYER",
   SELLER: "SELLER",
   ADMIN: "ADMIN",
