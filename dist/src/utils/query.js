@@ -7,7 +7,7 @@ const paginationGenerator = ({
   totalItems = defaults.totalItems,
 }) => {
   if (totalItems < 1) {
-    // throw new Error("Total page less than one");
+    throw new Error("Total page less than one");
   }
 
   const totalPage = Math.ceil(totalItems / limit);
