@@ -5,6 +5,8 @@ const config = {
   sortType: "dsc",
   sortBy: "updatedAt",
   search: "",
+  email: "admin@devsujon.com",
+  password: "pass1234@",
 };
 
 module.exports = Object.freeze(config);

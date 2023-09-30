@@ -11,6 +11,8 @@ servers:
   - description: Development server
     url: http://localhost:4000/api/v1
 tags:
+  - name: Health
+    description: Api Health Endpoints (public)
   - name: Auth
     description: Authentication Endpoints (public)
   - name: Users
@@ -26,6 +28,33 @@ tags:
   - name: Reports
     description: Report Endpoints (admin only)
 paths:
+  /health:
+    get:
+      tags:
+        - Health
+      description: check API is live on Server.
+      responses:
+        "200":
+          description: Successful Request
+          content:
+            "application/json":
+              schema:
+                type: object
+                required:
+                  - health
+                properties:
+                  health:
+                    type: string
+        "400":
+          $ref: "#components/responses/400"
+        "401":
+          $ref: "#components/responses/401"
+        "403":
+          $ref: "#components/responses/403"
+        "404":
+          $ref: "#components/responses/404"
+        "500":
+          $ref: "#components/responses/500"
   /auth/signup:
     post:
       tags:
