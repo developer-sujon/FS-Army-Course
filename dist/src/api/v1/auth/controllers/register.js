@@ -38,7 +38,7 @@ const register = async (req, res, next) => {
         signin: req.url.replace("signup", "signin"),
       },
     };
-    //await session.commitTransaction();
+    await session.commitTransaction();
     res.status(200).json(response);
   } catch (err) {
     await session.abortTransaction();
